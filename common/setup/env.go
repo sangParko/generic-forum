@@ -1,6 +1,7 @@
 package setup
 
 import (
+	"../migration"
 	"../util"
 	"fmt"
 	"github.com/google/logger"
@@ -87,7 +88,7 @@ func (env *Env) GetDB() *gorm.DB {
 	if err != nil {
 		log.Fatal("Fatal error, main(): database connection cannot be established." + err.Error())
 	}
-	MigrateDatabase(db)
+	migration.MigrateDatabase(db)
 	return db
 }
 

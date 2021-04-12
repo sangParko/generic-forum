@@ -16,7 +16,7 @@ export interface Post {
 export function getPostInstance(html: string): Post {
     return {
         DislikedUsers: [],
-        HTMLList: [],
+        HTMLList: [getHTMLPost(html)],
         LikedUsers: [],
         Owner: getUserAccountInstance(),
         Replies: [],
@@ -28,6 +28,10 @@ export function getPostInstance(html: string): Post {
 export interface HTMLPost {
     ID: number;
     HTML: string;
+}
+
+export function getHTMLPost(html: string): HTMLPost {
+    return {HTML: html, ID: 0};
 }
 
 export interface Reply {
@@ -52,8 +56,24 @@ export class APIPost extends APIBase {
      *
      * @returns {Promise<string>} ret - Create Post
      */
-    public uploadImage(file: any): Promise<string> {
-        return this.post<string>('/posts', file)
+    public createPost(post: Post): Promise<string> {
+        return this.post<string>('/posts', post)
+            .then((response) => {
+                const {data} = response;
+                return data;
+            })
+            .catch((error: AxiosError) => {
+                throw error;
+            });
+    }
+
+    /**
+     * returns posts
+     *
+     * @returns {Promise<Array<Post>>} ret - Retrieve Posts
+     */
+    public getPosts(page: number): Promise<Array<Post>> {
+        return this.get<Array<Post>>('/posts/' + page)
             .then((response) => {
                 const {data} = response;
                 return data;

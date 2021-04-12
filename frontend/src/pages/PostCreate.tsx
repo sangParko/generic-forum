@@ -9,13 +9,15 @@ import commonStyles from '../lib/CommonStyles';
 import {convertToRaw, EditorState} from 'draft-js';
 import APIFiles from '../lib/API/APIFiles';
 import { AxiosError } from 'axios';
+import APIPost, {getPostInstance} from '../lib/API/APIPost';
 
 const PostCreate: React.FC = () => {
     const cs = commonStyles();
     const [editorState, setEditorState] = useState<EditorState>(EditorState.createEmpty());
+    const [content, setContent] = useState<string>("");
     const onEditorStateChange = (state: EditorState) => {
-        console.log(draftToHtml(convertToRaw(state.getCurrentContent())));
         setEditorState(state);
+        setContent(draftToHtml(convertToRaw(state.getCurrentContent())));
     };
 
     const uploadCallback = (file: any) => {
@@ -35,6 +37,15 @@ const PostCreate: React.FC = () => {
             }
         );
     };
+
+    const createPost = () => {
+        let post = getPostInstance(content)
+        APIPost.createPost(post).then(resp => {
+            console.log(resp)
+        }).catch(err => {
+            console.error(err)
+        })
+    }
 
     return (
         <div className="login">
@@ -62,10 +73,7 @@ const PostCreate: React.FC = () => {
                         <Button
                             variant={'contained'}
                             color={'primary'}
-                            onClick={() => {
-
-                            }}
-                        >
+                            onClick={createPost}>
                             Create
                         </Button>
                     </div>

@@ -1,7 +1,6 @@
-import { AxiosError } from "axios";
-import {APIBase} from "./APIBase";
-import {APIConfig} from "./APIConfig";
-import {Post} from './APIPost';
+import {AxiosError} from 'axios';
+import {APIBase} from './APIBase';
+import {APIConfig} from './APIConfig';
 
 export interface LoginCredentials {
     userID: string;
@@ -26,7 +25,7 @@ export interface AccountCreationResponse {
     PWD: string;
 }
 
-export interface UserAccount{
+export interface UserAccount {
     ID: number;
     UserID: string;
     PrivilegeTitle: string;
@@ -35,8 +34,9 @@ export interface UserAccount{
 export function getUserAccountInstance(): UserAccount {
     return {
         ID: 0, PrivilegeTitle: '', UserID: ''
-    }
+    };
 }
+
 export class APIUser extends APIBase {
 
     /**
@@ -45,11 +45,11 @@ export class APIUser extends APIBase {
      * @param {object} credentials - user's id and password.
      * @returns {Promise<Token>} TokenData - user's token with privilegeTitle,
      */
-    public signIn (credentials: LoginCredentials): Promise<Token> {
-        return this.post<Token>("/auth/token", JSON.stringify(credentials))
+    public signIn(credentials: LoginCredentials): Promise<Token> {
+        return this.post<Token>('/auth/token', credentials)
             .then((response) => {
-                const { data } = response;
-                return data
+                const {data} = response;
+                return data;
             })
             .catch((error: AxiosError) => {
                 throw error;
@@ -62,11 +62,11 @@ export class APIUser extends APIBase {
      * @param {object} credentials - user's id and password.
      * @returns {Promise<Token>} TokenData - user's token with privilegeTitle,
      */
-    public signUp (credentials: LoginCredentials): Promise<AccountCreationResponse> {
-        return this.post<AccountCreationResponse>("/accounts", JSON.stringify(credentials))
+    public signUp(credentials: LoginCredentials): Promise<AccountCreationResponse> {
+        return this.post<AccountCreationResponse>('/accounts', credentials)
             .then((response) => {
-                const { data } = response;
-                return data
+                const {data} = response;
+                return data;
             })
             .catch((error: AxiosError) => {
                 throw error;
@@ -77,11 +77,11 @@ export class APIUser extends APIBase {
      * Gets All Users
      *
      */
-    public getAllUsers (): Promise<Array<UserAccount>> {
-        return this.get<Array<UserAccount>>("/accounts")
+    public getAllUsers(): Promise<Array<UserAccount>> {
+        return this.get<Array<UserAccount>>('/accounts')
             .then((response) => {
-                const { data } = response;
-                return data
+                const {data} = response;
+                return data;
             })
             .catch((error: AxiosError) => {
                 throw error;
@@ -92,11 +92,11 @@ export class APIUser extends APIBase {
      * Deletes a User
      *
      */
-    public deleteUser (user: UserAccount): Promise<string> {
-        return this.delete<string>("/accounts/" + user.ID)
+    public deleteUser(user: UserAccount): Promise<string> {
+        return this.delete<string>('/accounts/' + user.ID)
             .then((response) => {
-                const { data } = response;
-                return data
+                const {data} = response;
+                return data;
             })
             .catch((error: AxiosError) => {
                 throw error;
@@ -107,11 +107,11 @@ export class APIUser extends APIBase {
      * Updates a User
      *
      */
-    public updateUser (user: UserAccount): Promise<UserAccount> {
-        return this.put<UserAccount>("/accounts/" + user.ID, JSON.stringify(user))
+    public updateUser(user: UserAccount): Promise<UserAccount> {
+        return this.put<UserAccount>('/accounts/' + user.ID, user)
             .then((response) => {
-                const { data } = response;
-                return data
+                const {data} = response;
+                return data;
             })
             .catch((error: AxiosError) => {
                 throw error;
@@ -123,11 +123,11 @@ export class APIUser extends APIBase {
      * Updates All Users
      *
      */
-    public updateAllUsers (users: Array<UserAccount>): Promise<Array<UserAccount>> {
-        return this.put<Array<UserAccount>>("/accounts", JSON.stringify({"Accounts": users}))
+    public updateAllUsers(users: Array<UserAccount>): Promise<Array<UserAccount>> {
+        return this.put<Array<UserAccount>>('/accounts', {'Accounts': users})
             .then((response) => {
-                const { data } = response;
-                return data
+                const {data} = response;
+                return data;
             })
             .catch((error: AxiosError) => {
                 throw error;
@@ -138,12 +138,11 @@ export class APIUser extends APIBase {
      * Updates user password
      * User's identity is passed in with auth token
      */
-    public updateUserPassword (oldPassword: string, newPassword: string): Promise<string> {
-        return this.put<string>("/accounts/password",
-            JSON.stringify({ "OldPassword": oldPassword, "NewPassword": newPassword }))
+    public updateUserPassword(oldPassword: string, newPassword: string): Promise<string> {
+        return this.put<string>('/accounts/password', {'OldPassword': oldPassword, 'NewPassword': newPassword})
             .then((response) => {
-                const { data } = response;
-                return data
+                const {data} = response;
+                return data;
             })
             .catch((error: AxiosError) => {
                 throw error;
@@ -152,5 +151,5 @@ export class APIUser extends APIBase {
 
 }
 
-export default new APIUser(APIConfig) ;
+export default new APIUser(APIConfig);
 

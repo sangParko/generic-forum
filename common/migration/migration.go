@@ -1,7 +1,8 @@
-package setup
+package migration
 
 import (
 	"../../domains/account"
+	"../../domains/post"
 	"../util"
 	"fmt"
 	"gorm.io/gorm"
@@ -17,6 +18,18 @@ func migrateTables(db *gorm.DB) {
 	fmt.Println("[INFO] table schemas migrating...")
 	fmt.Println("[INFO] existing columns may not be updated.")
 	if err := db.AutoMigrate(&account.Account{}); err != nil {
+		fmt.Println(err)
+	}
+	if err := db.AutoMigrate(&post.Post{}); err != nil {
+		fmt.Println(err)
+	}
+	if err := db.AutoMigrate(&post.HTMLPost{}); err != nil {
+		fmt.Println(err)
+	}
+	if err := db.AutoMigrate(&post.Reply{}); err != nil {
+		fmt.Println(err)
+	}
+	if err := db.AutoMigrate(&post.NestedReply{}); err != nil {
 		fmt.Println(err)
 	}
 	fmt.Println("[INFO] table schemas migration done.")

@@ -45,7 +45,7 @@ func (a *AuthService) BasicAuthenticator(next http.Handler) http.Handler {
 
 func (a *AuthService) LimitHTTPMethodsForMonitor(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		isMonitor, err := a.isMonitor(w,r)
+		isMonitor, err := a.isMonitor(r)
 		if err != nil {
 			http.Error(w, err.Error(), 401)
 			return
@@ -103,7 +103,7 @@ func (a *AuthService) authenticateAdminLevel(w http.ResponseWriter, r *http.Requ
 	return nil
 }
 
-func (a *AuthService) isMonitor(w http.ResponseWriter, r *http.Request) (bool, error) {
+func (a *AuthService) isMonitor(r *http.Request) (bool, error) {
 	_, claims, err := jwtauth.FromContext(r.Context())
 	if err != nil {
 		return false, err
@@ -114,6 +114,20 @@ func (a *AuthService) isMonitor(w http.ResponseWriter, r *http.Request) (bool, e
 	}
 
 	return false, nil
+}
+
+func (a *AuthService) User(r *http.Request) (account.Account, error) {
+	_, claims, err := jwtauth.FromContext(r.Context())
+	if err != nil {
+		return account.Account{}, err
+	}
+
+	acc, err := a.accountServ.GetAccountByUserID(claims["id"].(string))
+	if err != nil {
+		return account.Account{}, err
+	}
+
+	return acc, nil
 }
 
 func (a *AuthService) GetTokensForUser(userID string) (bool, string, string, string, string, error) {

@@ -2,12 +2,11 @@ package main
 
 import (
 	"./common/setup"
-	"./common/socket"
 	"./common/util"
-	"./domains"
 	"./domains/account"
 	"./domains/auth"
 	"./domains/image"
+	"./domains/post"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/jwtauth"
@@ -77,27 +76,21 @@ func router(loggger util.ApiLogger, db *gorm.DB, env *setup.Env) http.Handler {
 	accRepo := account.NewAccountRepo(db, loggger)
 	accServ := account.NewAccountService(accRepo)
 	authServ := auth.NewAuthService(tokenAuth, accServ)
+	postServ := post.NewPostService(db)
 
 	authC := auth.NewAuthController(resUtil, tokenAuth, authServ, accServ)
 	accC := account.NewAccountController(resUtil, accServ)
 	imgC := image.NewImageController(env, resUtil)
+	postC := post.NewPostController(resUtil, postServ, authServ)
 	router := chi.NewRouter()
 	setup.AllowCORS(router)
 	currentDir, err := os.Getwd()
 	if err != nil {
 		panic(err)
 	}
-	webSocketRouter := socket.NewWebSocketRouter()
-	peerC := domains.NewAuthController()
-	webSocketRouter.RegisterRoute("peer-connect", peerC.ConnectPeers)
-
-
-	router.Get("/ws", webSocketRouter.WebSocketEndpoint)
-	router.Post("/ws", webSocketRouter.WebSocketEndpoint)
 
 	var buildPath = path.Join(currentDir, "/frontend/build")
 	setup.ServeFrontEndPages(router, buildPath)
-
 
 	router.Get("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, buildPath+"/favicon.ico")
@@ -137,11 +130,13 @@ func router(loggger util.ApiLogger, db *gorm.DB, env *setup.Env) http.Handler {
 				protectedR.Use(authServ.LimitHTTPMethodsForMonitor)
 			}
 
-			//note create accounts is in public route.
+			//note that create accounts is in public route.
 			protectedR.Get("/accounts/{id}", accC.GetAccount)
 			protectedR.Put("/accounts/password", accC.ChangePassword)
 
 			protectedR.Post("/images", imgC.UploadImage)
+			protectedR.Post("/posts", postC.CreatePost)
+			protectedR.Get("/posts/{page}", postC.GetPosts)
 
 			//routes that require admin privilege
 			protectedR.Group(func(adminProtectedRoute chi.Router) {
