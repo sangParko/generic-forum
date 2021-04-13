@@ -2,12 +2,8 @@ import React, {useEffect, useState} from 'react';
 import {useHistory, withRouter} from 'react-router';
 import {connect} from 'react-redux';
 import {Button, Container, Grid} from '@material-ui/core';
-import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import commonStyles from '../lib/CommonStyles';
 import APIPost, {Post} from '../lib/API/APIPost';
-import 'codemirror/lib/codemirror.css';
-import '@toast-ui/editor/dist/toastui-editor.css';
-import { Editor } from '@toast-ui/react-editor';
 
 
 const Main: React.FC = () => {
@@ -26,57 +22,38 @@ const Main: React.FC = () => {
 
     const getMarkUp = (p: Post) => {
         return {
-            __html: p.HTMLList &&
-                p.HTMLList[0] &&
-                p.HTMLList[0].HTML
+            __html: p.Title
         };
     };
-
-    const ref = React.useRef();
-    const handleFocus = () => {
-        console.log('focus!!');
-    };
-
-
-
 
     return (
         <div className="login">
             <Container maxWidth="md">
                 <Grid container spacing={3} alignItems="center" justify="center">
                     <div className={cs.horizontalBlock30px}/>
-                    <Button
-                        variant={'contained'}
-                        color={'primary'}
-                        onClick={() => {
-                            hs.push('/posts/create');
-                        }}
-                    > 글 쓰기
-                    </Button>
+                    <Grid item xs={8}>
+                        <Button
+                            variant={'contained'}
+                            color={'primary'}
+                            onClick={() => {
+                                hs.push('/posts/create');
+                            }}
+                        > 글 쓰기
+                        </Button>
+                    </Grid>
                     <div className={cs.horizontalBlock30px}/>
-                    <h1> 글 </h1>
                     {
                         posts && posts.map((p, index) =>
-                            <div key={index} dangerouslySetInnerHTML={getMarkUp(p)}/>
+                            <Grid item xs={8}>
+                                <div key={index}
+                                     dangerouslySetInnerHTML={getMarkUp(p)}
+                                     onClick={() => {
+                                       hs.push("/posts/" + p.ID);
+                                     }}
+                                />
+                            </Grid>
                         )
                     }
-                    <div className={cs.horizontalBlock30px}/>
-                    <Editor
-                        previewStyle="vertical"
-                        height="400px"
-                        initialEditType="markdown"
-                        initialValue="hello"
-                        // @ts-ignore
-                        ref={ref}
-                        // @ts-ignore
-                        onFocus={handleFocus}
-                    />
-                    <Button onClick={() => {
-                        // @ts-ignore
-                        console.log(ref && ref.current && ref.current.editorInst.exec('Bold'))
-                        // @ts-ignore
-                        console.log(ref && ref.current.editorInst.getHtml())
-                    }}> Push </Button>
                 </Grid>
             </Container>
         </div>

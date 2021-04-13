@@ -41,3 +41,17 @@ func (s *PostService) GetPosts(page uint) ([]Post, error) {
 	}
 	return posts, nil
 }
+
+
+func (s *PostService) GetPost(id uint) (Post, error) {
+	var post Post
+	if err := s.db.First(&post, "id = ?", id).Error; err != nil {
+		return Post{}, err
+	}
+	var lists []HTMLPost
+	if err := s.db.Model(&post).Association("HTMLList").Find(&lists); err != nil {
+		return Post{}, err
+	}
+	post.HTMLList = lists
+	return post, nil
+}

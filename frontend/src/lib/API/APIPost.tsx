@@ -4,6 +4,7 @@ import {APIConfig} from './APIConfig';
 import {getUserAccountInstance, UserAccount} from './APIUser';
 
 export interface Post {
+    ID: number;
     Owner: UserAccount;
     Type: number;
     Title: string;
@@ -15,6 +16,7 @@ export interface Post {
 
 export function getPostInstance(html: string): Post {
     return {
+        ID: 0,
         DislikedUsers: [],
         HTMLList: [getHTMLPost(html)],
         LikedUsers: [],
@@ -73,7 +75,23 @@ export class APIPost extends APIBase {
      * @returns {Promise<Array<Post>>} ret - Retrieve Posts
      */
     public getPosts(page: number): Promise<Array<Post>> {
-        return this.get<Array<Post>>('/posts/' + page)
+        return this.get<Array<Post>>('/posts/page/' + page)
+            .then((response) => {
+                const {data} = response;
+                return data;
+            })
+            .catch((error: AxiosError) => {
+                throw error;
+            });
+    }
+
+    /**
+     * returns post
+     *
+     * @returns {Promise<Array<Post>>} ret - Retrieve Posts
+     */
+    public getPost(id: number): Promise<Post> {
+        return this.get<Post>('/posts/' + id)
             .then((response) => {
                 const {data} = response;
                 return data;

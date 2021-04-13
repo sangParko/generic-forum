@@ -10,7 +10,7 @@ import 'codemirror/lib/codemirror.css';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import {Editor} from '@toast-ui/react-editor';
 
-const PostCreate: React.FC = () => {
+const PostUpdate: React.FC = () => {
     const cs = commonStyles();
     const hs = useHistory();
     const [title, setTitle] = useState<string>('');
@@ -98,4 +98,4 @@ const PostCreate: React.FC = () => {
     );
 };
 
-export default connect()(withRouter(PostCreate));
+export default connect()(withRouter(PostUpdate));

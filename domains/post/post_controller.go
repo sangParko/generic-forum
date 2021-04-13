@@ -68,7 +68,7 @@ func (c *postController) CreatePost(w http.ResponseWriter, r *http.Request) {
 // @Param page path int true "page"
 // @Success 200
 // @Failure 400
-// @Router /posts/{page} [get]
+// @Router /posts/page/{page} [get]
 func (c *postController) GetPosts(w http.ResponseWriter, r *http.Request) {
 	page, err := strconv.Atoi(chi.URLParam(r, "page"))
 	if err != nil {
@@ -83,3 +83,30 @@ func (c *postController) GetPosts(w http.ResponseWriter, r *http.Request) {
 	posts, err := c.serv.GetPosts(uint(page))
 	c.resUtil.RespondOKWithData(w, r, posts)
 }
+
+
+// @Security ApiKeyAuth
+// @Summary Gets posts
+// @Tags UserAccounts
+// @Description Gets posts
+// @Accept  json
+// @Produce  json
+// @Param id path int true "id"
+// @Success 200
+// @Failure 400
+// @Router /posts/{id} [get]
+func (c *postController) GetPost(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		c.resUtil.RespondBadRequest(w, r, err)
+		return
+	}
+	if id < 1 {
+		c.resUtil.RespondBadRequest(w, r, errors.New("id must be a positive number"))
+		return
+	}
+
+	posts, err := c.serv.GetPost(uint(id))
+	c.resUtil.RespondOKWithData(w, r, posts)
+}
+
