@@ -16,7 +16,7 @@ const devAPIHost = localDebuggingOn ? localDebuggingURL : remoteDebuggingURL;
 const prodAPIHost = 'http://' + window.location.host + '/api/';
 const url = debuggingOn ? devAPIHost : prodAPIHost;
 export const APIConfig = {
-    timeout: 60000,
+    timeout: 6000,
     baseURL: url,
     contentType: "application/json",
     headers: {

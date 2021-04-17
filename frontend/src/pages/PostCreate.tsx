@@ -13,14 +13,18 @@ import {Editor} from '@toast-ui/react-editor';
 const PostCreate: React.FC = () => {
     const cs = commonStyles();
     const hs = useHistory();
-    const [title, setTitle] = useState<string>('');
+    const [title, setTitle] = useState<string>("");
     const createPost = () => {
         // console.log(ref && ref.current && ref.current.editorInst.exec('Bold'))
         // @ts-ignore
         let content = ref && ref.current.editorInst.getHtml();
+        if (title.length < 5) {
+            alert('제목이 최소 5자 이상이어야 합니다.');
+            return;
+        }
 
         if (content && content.length < 20) {
-            alert('최소 20자 이상이어야 합니다.');
+            alert('본문이 최소 20자 이상이어야 합니다.');
             return;
         }
 
@@ -72,7 +76,7 @@ const PostCreate: React.FC = () => {
                         <Editor
                             previewStyle="vertical"
                             height="400px"
-                            initialEditType="markdown"
+                            initialEditType="wysiwyg"
                             initialValue="hello"
 
                             // @ts-ignore
@@ -90,6 +94,16 @@ const PostCreate: React.FC = () => {
                             color={'primary'}
                             onClick={createPost}>
                             Create
+                        </Button>
+                    </div>
+                    <div>
+                        <Button
+                            variant={'contained'}
+                            color={'primary'}
+                            onClick={() => {
+                                hs.goBack()
+                            }}>
+                            Back
                         </Button>
                     </div>
                 </Grid>

@@ -17,6 +17,10 @@ const commonStyles = makeStyles((theme: Theme) =>
             width: '100%',
             height: '100px',
         },
+        centeredDiv100px: {
+            margin: 'auto',
+            width: '100px'
+        }
     }));
 
 export default commonStyles;

@@ -1,16 +1,24 @@
 import React, {useEffect, useState} from 'react';
 import {useHistory, withRouter} from 'react-router';
-import {connect} from 'react-redux';
-import {Button, Container, Grid} from '@material-ui/core';
+import {Button, createStyles, Theme} from '@material-ui/core';
 import commonStyles from '../lib/CommonStyles';
 import APIPost, {Post} from '../lib/API/APIPost';
+import PostListTable from '../components/PostListTable';
+import {connect} from 'react-redux';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 
 
 const Main: React.FC = () => {
     const cs = commonStyles();
     const hs = useHistory();
-
     const [posts, setPosts] = useState<Array<Post>>();
+    const st = makeStyles((theme: Theme) =>
+        createStyles({
+            'main': {
+                color: 'blue',
+            }
+        })
+    )();
 
     useEffect(() => {
         APIPost.getPosts(1).then(posts => {
@@ -20,42 +28,24 @@ const Main: React.FC = () => {
         });
     }, []);
 
-    const getMarkUp = (p: Post) => {
-        return {
-            __html: p.Title
-        };
-    };
 
     return (
-        <div className="login">
-            <Container maxWidth="md">
-                <Grid container spacing={3} alignItems="center" justify="center">
-                    <div className={cs.horizontalBlock30px}/>
-                    <Grid item xs={8}>
-                        <Button
-                            variant={'contained'}
-                            color={'primary'}
-                            onClick={() => {
-                                hs.push('/posts/create');
-                            }}
-                        > 글 쓰기
-                        </Button>
-                    </Grid>
-                    <div className={cs.horizontalBlock30px}/>
-                    {
-                        posts && posts.map((p, index) =>
-                            <Grid item xs={8}>
-                                <div key={index}
-                                     dangerouslySetInnerHTML={getMarkUp(p)}
-                                     onClick={() => {
-                                       hs.push("/posts/" + p.ID);
-                                     }}
-                                />
-                            </Grid>
-                        )
-                    }
-                </Grid>
-            </Container>
+        <div className={st.main}>
+            <div className={cs.horizontalBlock30px}/>
+            <div className={cs.horizontalBlock30px}/>
+            <div style={{margin: 'auto', width: '100px'}}>
+                <Button
+                    variant={'contained'}
+                    color={'primary'}
+                    style={{margin: 'auto'}}
+                    onClick={() => {
+                        hs.push('/posts/create');
+                    }}
+                > 글 쓰기
+                </Button>
+            </div>
+            <div className={cs.horizontalBlock30px}/>
+            <PostListTable posts={posts}/>
         </div>
     );
 };
