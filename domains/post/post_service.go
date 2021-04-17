@@ -1,6 +1,9 @@
 package post
 
-import "gorm.io/gorm"
+import (
+	"../account"
+	"gorm.io/gorm"
+)
 
 type PostService struct {
 	db *gorm.DB
@@ -53,5 +56,21 @@ func (s *PostService) GetPost(id uint) (Post, error) {
 		return Post{}, err
 	}
 	post.HTMLList = lists
+
+	var owner account.Account
+	if err := s.db.Model(&post).Association("Owner").Find(&owner); err != nil {
+		return Post{}, err
+	}
+	post.Owner = owner
+
 	return post, nil
+}
+
+func (s *PostService) DeletePost(id uint) error {
+	var post Post
+	if err := s.db.Delete(&post, "id = ?", id).Error; err != nil {
+		return err
+	}
+
+	return nil
 }

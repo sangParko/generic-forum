@@ -7,6 +7,7 @@ import APIPost, {getPostInstance, Post} from '../lib/API/APIPost';
 import 'codemirror/lib/codemirror.css';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import Viewer from '@toast-ui/editor/dist/toastui-editor-viewer';
+import User from '../lib/User';
 
 const PostView: React.FC = () => {
     const cs = commonStyles();
@@ -33,7 +34,6 @@ const PostView: React.FC = () => {
             p.HTMLList &&
             p.HTMLList[0] &&
             p.HTMLList[0].HTML;
-        console.log(html);
         return {
             __html: html
         };
@@ -43,6 +43,23 @@ const PostView: React.FC = () => {
         <div className="login">
             <div className={cs.horizontalBlock30px}/>
             <div className={cs.centeredDiv100px}>
+                {
+                    User.getUserID() === post.Owner.UserID &&
+                    <Button
+                        variant={'contained'}
+                        color={'primary'}
+                        onClick={() => {
+                            APIPost.deletePost(parseInt(id || '0')).then(resp => {
+                                alert(resp);
+                                hs.goBack();
+                            }).catch(err => {
+                                APIPost.AlertErrMsg(err);
+                            })
+                        }}>
+                        Delete
+                    </Button>
+
+                }
                 <Button
                     variant={'contained'}
                     color={'primary'}

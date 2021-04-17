@@ -138,6 +138,7 @@ func router(loggger util.ApiLogger, db *gorm.DB, env *setup.Env) http.Handler {
 			protectedR.Post("/posts", postC.CreatePost)
 			protectedR.Get("/posts/page/{page}", postC.GetPosts)
 			protectedR.Get("/posts/{id}", postC.GetPost)
+			protectedR.Delete("/posts/{id}", postC.DeletePost)
 
 			//routes that require admin privilege
 			protectedR.Group(func(adminProtectedRoute chi.Router) {

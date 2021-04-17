@@ -110,3 +110,35 @@ func (c *postController) GetPost(w http.ResponseWriter, r *http.Request) {
 	c.resUtil.RespondOKWithData(w, r, posts)
 }
 
+
+
+// @Security ApiKeyAuth
+// @Summary Deletes post by id
+// @Tags UserAccounts
+// @Description Deletes post by id
+// @Accept  json
+// @Produce  json
+// @Param id path int true "id"
+// @Success 200
+// @Failure 400
+// @Router /posts/{id} [delete]
+func (c *postController) DeletePost(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		c.resUtil.RespondBadRequest(w, r, err)
+		return
+	}
+	if id < 1 {
+		c.resUtil.RespondBadRequest(w, r, errors.New("id must be a positive number"))
+		return
+	}
+
+	err = c.serv.DeletePost(uint(id))
+	if err != nil {
+		c.resUtil.RespondBadRequest(w, r, err)
+		return
+	}
+
+	c.resUtil.RespondOKWithData(w, r, "deleted")
+}
+

@@ -15,9 +15,10 @@ const PostListItem: React.FC<postListItemProps> = ({post}) => {
     const useStyles = makeStyles((theme: Theme) =>
         createStyles({
             'listItem': {
-                border: '1px solid gray',
+                borderBottom: '1px solid gray',
                 cursor: 'pointer',
                 color: 'blue',
+                minHeight: '2rem',
             }
         })
     );
@@ -30,12 +31,13 @@ const PostListItem: React.FC<postListItemProps> = ({post}) => {
 
 
     return (
-        <div className={classes.listItem}>
+        <div className={classes.listItem}
+             onClick={() => {
+                 hs.push('/posts/' + post.ID);
+             }}
+        >
             <div
                 dangerouslySetInnerHTML={getMarkUp(post)}
-                onClick={() => {
-                    hs.push('/posts/' + post.ID);
-                }}
             />
         </div>
     );
@@ -49,13 +51,28 @@ const PostListTable: React.FC<props> = ({posts}) => {
     const useStyles = makeStyles((theme: Theme) =>
         createStyles({
             'listBox': {
+                border: '1px solid gray',
                 maxWidth: '30rem',
                 minWidth: '15rem',
                 minHeight: '15rem',
                 margin: 'auto',
+            },
+            'table': {
+                'borderCollapse': 'collapse',
+                width: '100%'
+            },
+            'thtd': {
+                padding: '0.25rem',
+                textAlign: 'left',
+                border: '1px solid #ccc',
+            },
+            'tbody': {
+                background: 'yellow',
             }
         })
     );
+
+
     const classes = useStyles();
 
     return (

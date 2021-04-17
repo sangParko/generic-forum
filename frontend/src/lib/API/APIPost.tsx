@@ -100,6 +100,22 @@ export class APIPost extends APIBase {
                 throw error;
             });
     }
+
+    /**
+     * deletes post
+     *
+     * @returns {Promise<string>} ret - delets Posts
+     */
+    public deletePost(id: number): Promise<string> {
+        return this.delete<string>('/posts/' + id)
+            .then((response) => {
+                const {data} = response;
+                return data;
+            })
+            .catch((error: AxiosError) => {
+                throw error;
+            });
+    }
 }
 
 export default new APIPost(APIConfig);
