@@ -2,13 +2,14 @@ import React, {useEffect, useState} from 'react';
 import {useHistory, useParams, withRouter} from 'react-router';
 import {connect} from 'react-redux';
 import {Button} from '@material-ui/core';
-import commonStyles from '../lib/CommonStyles';
+import commonStyles, {ContentContainer} from '../lib/CommonStyles';
 import APIPost, {getHTMLInstance, getPostInstance, HTMLPost, Post} from '../lib/API/APIPost';
 import 'codemirror/lib/codemirror.css';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import Moment from 'react-moment';
 import User from '../lib/User';
-import {Viewer} from '@toast-ui/react-editor';
+import {Editor, Viewer} from '@toast-ui/react-editor';
+import {uploadImage} from './PostCreate';
 
 export const getMarkdown = (p: Post): string => {
     return p &&
@@ -35,6 +36,7 @@ export const getHTMLTitle = (p: HTMLPost): string => {
 const PostView: React.FC = () => {
     const cs = commonStyles();
     const [post, setPost] = useState<Post>(getPostInstance(getHTMLInstance('')));
+    const [ready, setReady] = useState<boolean>(false);
     const {id} = useParams();
     const hs = useHistory();
     const ref = React.useRef();
@@ -48,9 +50,7 @@ const PostView: React.FC = () => {
 
         APIPost.getPost(postID).then(p => {
             setPost(p);
-
-            // @ts-ignore
-            ref && ref.current && ref.current.viewerInst.setMarkdown(getMarkdown(p));
+            setReady(true);
         }).catch(err => {
             APIPost.AlertErrMsg(err);
         });
@@ -58,7 +58,7 @@ const PostView: React.FC = () => {
 
 
     return (
-        <div className="login">
+        <ContentContainer>
             <div className={cs.horizontalBlock30px}/>
             <div className={cs.centeredDiv100px}>
                 {
@@ -98,40 +98,46 @@ const PostView: React.FC = () => {
                 </Button>
             </div>
             <div className={cs.horizontalBlock30px}/>
-            <div style={{backgroundColor: '#FFFFFF', maxWidth: '30rem', margin: 'auto'}}>
-                <h4>{User.getUserID()}</h4>
-                <h5>
-                    <Moment
-                        format={'yyyy-MM-DD-hh:mm:ss'}
-                        date={post.CreatedAt}
-                    />
-                    {
-                        post.CreatedAt !== post.UpdatedAt &&
-                            <span
-                                className={cs.hyperlink}
-                                onClick={() => {
-                                    hs.push('/posts/' + id + '/history')
-                                }}
-                            >
+            <h4>{User.getUserID()}</h4>
+            <h5>
+                <Moment
+                    format={'yyyy-MM-DD-hh:mm:ss'}
+                    date={post.CreatedAt}
+                />
+                {
+                    post.CreatedAt !== post.UpdatedAt &&
+                    <span
+                        className={cs.hyperlink}
+                        onClick={() => {
+                            hs.push('/posts/' + id + '/history');
+                        }}
+                    >
                                 수정됨
                             </span>
-                    }
-                </h5>
-                <hr/>
-                <h3>{post.HTMLList && post.HTMLList[0] && post.HTMLList[0].Title}</h3>
-                <hr/>
-                <Viewer
-                    initialValue={'Loading...'}
+                }
+            </h5>
+            <hr/>
+            <h3>{post.HTMLList && post.HTMLList[0] && post.HTMLList[0].Title}</h3>
+            <hr/>
+            {
+                ready && <Viewer
+                    initialValue={getMarkdown(post)}
+                />
+            }
+            <div className={cs.horizontalBlock30px}/>
+            <div style={{backgroundColor: '#FFFFFF'}}>
+                <Editor
+                    previewStyle="vertical"
+                    height="400px"
+                    initialEditType="wysiwyg"
+                    initialValue="hello"
 
                     // @ts-ignore
                     ref={ref}
-
-                    // @ts-ignore
-                    onFocus={() => {
-                    }}
+                    hooks={{addImageBlobHook: uploadImage}}
                 />
             </div>
-        </div>
+        </ContentContainer>
     );
 };
 

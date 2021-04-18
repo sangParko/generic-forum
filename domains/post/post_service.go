@@ -3,6 +3,7 @@ package post
 import (
 	"../account"
 	"gorm.io/gorm"
+	"sort"
 )
 
 type PostService struct {
@@ -65,6 +66,9 @@ func (s *PostService) GetPost(id uint) (Post, error) {
 	if err := s.db.Model(&post).Association("HTMLList").Find(&lists); err != nil {
 		return Post{}, err
 	}
+	sort.Slice(lists, func(i, j int) bool {
+		return lists[i].CreatedAt.After(lists[j].CreatedAt)
+	})
 	post.HTMLList = lists
 
 	var owner account.Account

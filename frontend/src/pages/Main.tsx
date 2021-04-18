@@ -1,26 +1,16 @@
 import React, {useEffect, useState} from 'react';
 import {useHistory, withRouter} from 'react-router';
-import {Button, createStyles, Theme} from '@material-ui/core';
-import commonStyles from '../lib/CommonStyles';
+import {Button} from '@material-ui/core';
+import commonStyles, {ContentContainer} from '../lib/CommonStyles';
 import APIPost, {Post} from '../lib/API/APIPost';
 import PostListTable from '../components/PostListTable';
 import {connect} from 'react-redux';
-import makeStyles from '@material-ui/core/styles/makeStyles';
 
 
 const Main: React.FC = () => {
     const cs = commonStyles();
     const hs = useHistory();
     const [posts, setPosts] = useState<Array<Post>>();
-    const st = makeStyles((theme: Theme) =>
-        createStyles({
-            'main': {
-                color: 'blue',
-                textAlign: 'center',
-                width: 'inherit',
-            }
-        })
-    )();
 
     useEffect(() => {
         APIPost.getPosts(1).then(posts => {
@@ -32,7 +22,7 @@ const Main: React.FC = () => {
 
 
     return (
-        <div className={st.main}>
+        <ContentContainer>
             <div className={cs.horizontalBlock30px}/>
             <div className={cs.horizontalBlock30px}/>
             <div style={{margin: 'auto', width: '100px'}}>
@@ -48,7 +38,7 @@ const Main: React.FC = () => {
             </div>
             <div className={cs.horizontalBlock30px}/>
             <PostListTable posts={posts}/>
-        </div>
+        </ContentContainer>
     );
 };
 

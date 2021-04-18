@@ -29,17 +29,6 @@ type Reply struct {
 	OwnerID       uint
 	Owner         account.Account
 	HTML          string
-	NestedReplies []NestedReply
 	LikedUsers    []account.Account `gorm:"many2many:reply_like_mapping;"`
 	DislikedUsers []account.Account `gorm:"many2many:reply_dislike_mapping;"`
-}
-
-type NestedReply struct {
-	gorm.Model
-	ReplyID       uint
-	OwnerID       uint
-	Owner         account.Account
-	HTML          string
-	LikedUsers    []account.Account `gorm:"many2many:nested_like_mapping;"`
-	DislikedUsers []account.Account `gorm:"many2many:nested_dislike_mapping;"`
 }

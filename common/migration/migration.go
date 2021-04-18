@@ -29,9 +29,6 @@ func migrateTables(db *gorm.DB) {
 	if err := db.AutoMigrate(&post.Reply{}); err != nil {
 		fmt.Println(err)
 	}
-	if err := db.AutoMigrate(&post.NestedReply{}); err != nil {
-		fmt.Println(err)
-	}
 	fmt.Println("[INFO] table schemas migration done.")
 }
 

@@ -1,4 +1,5 @@
 import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
+import styled from 'styled-components';
 
 const commonStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -33,3 +34,11 @@ const commonStyles = makeStyles((theme: Theme) =>
     }));
 
 export default commonStyles;
+
+export const ContentContainer = styled.div`
+            margin: auto;
+            width: 50%;
+            @media (max-width: 768px) {
+                width: 90%;
+            }
+`;

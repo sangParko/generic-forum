@@ -52,7 +52,6 @@ const PostListTable: React.FC<props> = ({posts}) => {
         createStyles({
             'listBox': {
                 border: '1px solid gray',
-                maxWidth: '30rem',
                 minWidth: '15rem',
                 minHeight: '15rem',
                 margin: 'auto',
