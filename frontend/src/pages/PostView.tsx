@@ -3,7 +3,7 @@ import {useHistory, useParams, withRouter} from 'react-router';
 import {connect} from 'react-redux';
 import {Button} from '@material-ui/core';
 import commonStyles from '../lib/CommonStyles';
-import APIPost, {getPostInstance, Post} from '../lib/API/APIPost';
+import APIPost, {getHTMLInstance, getPostInstance, HTMLPost, Post} from '../lib/API/APIPost';
 import 'codemirror/lib/codemirror.css';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import Moment from 'react-moment';
@@ -14,12 +14,27 @@ export const getMarkdown = (p: Post): string => {
     return p &&
         p.HTMLList &&
         p.HTMLList[0] &&
-        p.HTMLList[0].HTML;
+        getMarkdownFromHTML(p.HTMLList[0]);
+};
+
+export const getMarkdownFromHTML = (p: HTMLPost): string => {
+    return p && p.HTML;
+};
+
+export const getTitle = (p: Post): string => {
+    return p &&
+        p.HTMLList &&
+        p.HTMLList[0] && p.HTMLList[0].Title;
+};
+
+
+export const getHTMLTitle = (p: HTMLPost): string => {
+    return p && p.Title;
 };
 
 const PostView: React.FC = () => {
     const cs = commonStyles();
-    const [post, setPost] = useState<Post>(getPostInstance(''));
+    const [post, setPost] = useState<Post>(getPostInstance(getHTMLInstance('')));
     const {id} = useParams();
     const hs = useHistory();
     const ref = React.useRef();
@@ -90,9 +105,20 @@ const PostView: React.FC = () => {
                         format={'yyyy-MM-DD-hh:mm:ss'}
                         date={post.CreatedAt}
                     />
+                    {
+                        post.CreatedAt !== post.UpdatedAt &&
+                            <span
+                                className={cs.hyperlink}
+                                onClick={() => {
+                                    hs.push('/posts/' + id + '/history')
+                                }}
+                            >
+                                수정됨
+                            </span>
+                    }
                 </h5>
                 <hr/>
-                <h3>{post.Title}</h3>
+                <h3>{post.HTMLList && post.HTMLList[0] && post.HTMLList[0].Title}</h3>
                 <hr/>
                 <Viewer
                     initialValue={'Loading...'}

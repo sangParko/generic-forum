@@ -3,8 +3,13 @@ import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
 const commonStyles = makeStyles((theme: Theme) =>
     createStyles({
         contentContainer: {
-          width: '50%',
+            width: '50%',
             margin: 'auto',
+        },
+        hyperlink: {
+            color: 'blue',
+            cursor: 'pointer',
+            textDecoration: 'underline',
         },
         shortUI: {
             width: '250px',

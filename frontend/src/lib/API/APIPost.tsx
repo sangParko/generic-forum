@@ -7,7 +7,6 @@ export interface Post {
     ID: number;
     Owner: UserAccount;
     Type: number;
-    Title: string;
     CreatedAt: Date;
     UpdatedAt: Date;
     HTMLList: Array<HTMLPost> // keep track of changes
@@ -16,17 +15,16 @@ export interface Post {
     DislikedUsers: Array<UserAccount>
 }
 
-export function getPostInstance(html: string): Post {
+export function getPostInstance(html: HTMLPost): Post {
     return {
         ID: 0,
         CreatedAt: new Date(),
         UpdatedAt: new Date(),
         DislikedUsers: [],
-        HTMLList: [getHTMLPost(html)],
+        HTMLList: [html],
         LikedUsers: [],
         Owner: getUserAccountInstance(),
         Replies: [],
-        Title: '',
         Type: 0
     };
 }
@@ -34,10 +32,13 @@ export function getPostInstance(html: string): Post {
 export interface HTMLPost {
     ID: number;
     HTML: string;
+    Title: string;
+    CreatedAt: Date;
+    UpdatedAt: Date;
 }
 
-export function getHTMLPost(html: string): HTMLPost {
-    return {HTML: html, ID: 0};
+export function getHTMLInstance(initialValue: string): HTMLPost {
+    return {Title: '', CreatedAt: new Date(), UpdatedAt: new Date(), HTML: initialValue, ID: 0};
 }
 
 export interface Reply {

@@ -27,6 +27,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import PostCreate from './pages/PostCreate';
 import PostView from './pages/PostView';
 import PostEdit from './pages/PostEdit';
+import PostHistory from './pages/PostHistory';
 
 
 const allowUnauthenticated = true;
@@ -178,6 +179,11 @@ const App: React.FC = () => {
                                    signedIn={signedIn}
                                    render={() => (
                                        <PostEdit/>
+                                   )}/>
+                            <Route exact path="/posts/:id/history"
+                                   signedIn={signedIn}
+                                   render={() => (
+                                       <PostHistory/>
                                    )}/>
                             <Route exact path="/posts/:id"
                                    signedIn={signedIn}

@@ -3,19 +3,19 @@ import {useHistory, useParams, withRouter} from 'react-router';
 import {connect} from 'react-redux';
 import {Button, TextField} from '@material-ui/core';
 import commonStyles from '../lib/CommonStyles';
-import APIPost, {getHTMLPost, getPostInstance, Post} from '../lib/API/APIPost';
+import APIPost, {getHTMLInstance, getPostInstance, Post} from '../lib/API/APIPost';
 import 'codemirror/lib/codemirror.css';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import {Editor} from '@toast-ui/react-editor';
 import {uploadImage} from './PostCreate';
-import {getMarkdown} from './PostView';
+import {getMarkdown, getTitle} from './PostView';
 
 const PostEdit: React.FC = () => {
     const cs = commonStyles();
     const hs = useHistory();
     const {id} = useParams();
     const [title, setTitle] = useState<string>('');
-    const [post, setPost] = useState<Post>(getPostInstance(''));
+    const [post, setPost] = useState<Post>(getPostInstance(getHTMLInstance('')));
 
     const savePost = () => {
         // @ts-ignore
@@ -25,8 +25,10 @@ const PostEdit: React.FC = () => {
             alert('최소 20자 이상이어야 합니다.');
             return;
         }
-        post.Title = title;
-        post.HTMLList = [getHTMLPost(content)]
+
+        let html = getHTMLInstance(content);
+        html.Title = title;
+        post.HTMLList = [html]
 
         APIPost.updatePost(post).then(resp => {
             alert('저장되었습니다.');
@@ -46,7 +48,7 @@ const PostEdit: React.FC = () => {
 
         APIPost.getPost(postID).then(p => {
             setPost(p)
-            setTitle(p.Title);
+            setTitle(getTitle(p)) ;
             // @ts-ignore
             ref && ref.current && ref.current.editorInst.setMarkdown(getMarkdown(p));
         }).catch(err => {

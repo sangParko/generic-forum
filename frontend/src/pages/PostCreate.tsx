@@ -5,7 +5,7 @@ import {Button, Container, Grid, TextField} from '@material-ui/core';
 import commonStyles from '../lib/CommonStyles';
 import APIFiles from '../lib/API/APIFiles';
 import {AxiosError} from 'axios';
-import APIPost, {getPostInstance} from '../lib/API/APIPost';
+import APIPost, {getHTMLInstance, getPostInstance} from '../lib/API/APIPost';
 import 'codemirror/lib/codemirror.css';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import {Editor} from '@toast-ui/react-editor';
@@ -45,8 +45,9 @@ const PostCreate: React.FC = () => {
             return;
         }
 
-        let post = getPostInstance(content);
-        post.Title = title;
+        let html = getHTMLInstance(content);
+        html.Title = title
+        let post = getPostInstance(html);
 
         APIPost.createPost(post).then(resp => {
             alert('작성되었습니다.');

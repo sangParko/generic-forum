@@ -25,7 +25,7 @@ const PostListItem: React.FC<postListItemProps> = ({post}) => {
     const classes = useStyles();
     const getMarkUp = (p: Post) => {
         return {
-            __html: p.Title
+            __html: p.HTMLList && p.HTMLList[0] && p.HTMLList[0].Title
         };
     };
 
