@@ -69,6 +69,8 @@ func (c *postController) CreatePost(w http.ResponseWriter, r *http.Request) {
 // @Failure 400
 // @Router /posts [put]
 func (c *postController) UpdatePost(w http.ResponseWriter, r *http.Request) {
+	//@todo check permission
+
 	decoder := json.NewDecoder(r.Body)
 	var req Post
 	err := decoder.Decode(&req)
@@ -80,6 +82,42 @@ func (c *postController) UpdatePost(w http.ResponseWriter, r *http.Request) {
 	user, err := c.authServ.User(r)
 	req.Owner = user
 	post, err := c.serv.UpdatePost(req)
+	if err != nil {
+		c.resUtil.RespondBadRequest(w, r, err)
+		return
+	}
+
+	c.resUtil.RespondOKWithData(w, r, post)
+}
+
+// @Security ApiKeyAuth
+// @Summary Add a reply to a post
+// @Tags File
+// @Description Add a reply to a post
+// @Param Reply Reply file true "Reply"
+// @Accept  json
+// @Produce  json
+// @Success 200
+// @Failure 400
+// @Router /posts/{id}/reply [post]
+func (c *postController) AddReply(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		c.resUtil.RespondBadRequest(w, r, err)
+		return
+	}
+
+	decoder := json.NewDecoder(r.Body)
+	var req Reply
+	err = decoder.Decode(&req)
+	if err != nil {
+		c.resUtil.RespondBadRequest(w, r, err)
+		return
+	}
+
+	user, err := c.authServ.User(r)
+	req.Owner = user
+	post, err := c.serv.AddReplyToPost(uint(id), req)
 	if err != nil {
 		c.resUtil.RespondBadRequest(w, r, err)
 		return
@@ -154,6 +192,8 @@ func (c *postController) GetPost(w http.ResponseWriter, r *http.Request) {
 // @Failure 400
 // @Router /posts/{id} [delete]
 func (c *postController) DeletePost(w http.ResponseWriter, r *http.Request) {
+	//@todo check permission
+
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
 		c.resUtil.RespondBadRequest(w, r, err)

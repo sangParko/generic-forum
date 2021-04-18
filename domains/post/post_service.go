@@ -25,14 +25,21 @@ func (s *PostService) CreatePost(post Post) (Post, error) {
 	return post, nil
 }
 
-/**
-	Inserts new html
- */
 func (s *PostService) UpdatePost(post Post) (Post, error) {
 	if err := s.db.Save(&post).Error; err != nil {
 		return Post{}, err
 	}
 	return post, nil
+}
+
+func (s *PostService) AddReplyToPost(postID uint, reply Reply) (Post, error) {
+	post, err := s.GetPost(postID)
+	if err != nil {
+		return Post{}, err
+	}
+
+	post.Replies = append(post.Replies, reply)
+	return s.UpdatePost(post)
 }
 
 //
@@ -70,6 +77,15 @@ func (s *PostService) GetPost(id uint) (Post, error) {
 		return lists[i].CreatedAt.After(lists[j].CreatedAt)
 	})
 	post.HTMLList = lists
+
+	var replies []Reply
+	if err := s.db.Model(&post).Association("Replies").Find(&replies); err != nil {
+		return Post{}, err
+	}
+	sort.Slice(lists, func(i, j int) bool {
+		return lists[i].CreatedAt.After(lists[j].CreatedAt)
+	})
+	post.Replies = replies
 
 	var owner account.Account
 	if err := s.db.Model(&post).Association("Owner").Find(&owner); err != nil {

@@ -13,7 +13,6 @@ type Post struct {
 	HTMLList      []HTMLPost // keep track of changes
 	Replies       []Reply
 	LikedUsers    []account.Account `gorm:"many2many:post_like_mapping;"`
-	DislikedUsers []account.Account `gorm:"many2many:post_dislike_mapping;"`
 }
 
 type HTMLPost struct {
@@ -30,5 +29,4 @@ type Reply struct {
 	Owner         account.Account
 	HTML          string
 	LikedUsers    []account.Account `gorm:"many2many:reply_like_mapping;"`
-	DislikedUsers []account.Account `gorm:"many2many:reply_dislike_mapping;"`
 }

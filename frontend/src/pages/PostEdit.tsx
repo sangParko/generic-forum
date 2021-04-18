@@ -54,7 +54,7 @@ const PostEdit: React.FC = () => {
         }).catch(err => {
             APIPost.AlertErrMsg(err);
         });
-    }, []);
+    }, [id]);
 
     return (
         <div className={cs.contentContainer}>

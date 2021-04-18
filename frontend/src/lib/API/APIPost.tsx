@@ -42,19 +42,23 @@ export function getHTMLInstance(initialValue: string): HTMLPost {
 }
 
 export interface Reply {
-    Owner: Account;
+    Owner: UserAccount;
     HTML: string;
-    NestedReplies: Array<NestedReply>
-    LikedUsers: Array<Account>
-    DislikedUsers: Array<Account>
+    LikedUsers: Array<Account>;
+    CreatedAt: Date;
+    UpdatedAt: Date;
 }
 
-export interface NestedReply {
-    Owner: Account;
-    HTML: string;
-    LikedUsers: Array<Account>
-    DislikedUsers: Array<Account>
+export function getReplyInstance(html: string): Reply {
+    return {
+        HTML: html,
+        LikedUsers: [],
+        Owner: getUserAccountInstance(),
+        CreatedAt: new Date(),
+        UpdatedAt: new Date(),
+    };
 }
+
 
 export class APIPost extends APIBase {
 
@@ -75,12 +79,28 @@ export class APIPost extends APIBase {
     }
 
     /**
-     * create post
+     * update post
      *
      * @returns {Promise<string>} ret - Create Post
      */
     public updatePost(post: Post): Promise<string> {
         return this.put<string>('/posts', post)
+            .then((response) => {
+                const {data} = response;
+                return data;
+            })
+            .catch((error: AxiosError) => {
+                throw error;
+            });
+    }
+
+    /**
+     * add comment
+     *
+     * @returns {Promise<string>} ret - add comment
+     */
+    public addReply(postID: number, reply: Reply): Promise<Post> {
+        return this.post<Post>('/posts/' + postID + '/reply', reply)
             .then((response) => {
                 const {data} = response;
                 return data;
