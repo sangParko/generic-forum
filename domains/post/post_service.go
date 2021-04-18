@@ -24,6 +24,16 @@ func (s *PostService) CreatePost(post Post) (Post, error) {
 	return post, nil
 }
 
+/**
+	Inserts new html
+ */
+func (s *PostService) UpdatePost(post Post) (Post, error) {
+	if err := s.db.Save(&post).Error; err != nil {
+		return Post{}, err
+	}
+	return post, nil
+}
+
 //
 //func (s *PostService) GetPostByID(id uint) (Post, error) {
 //}

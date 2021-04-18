@@ -10,11 +10,19 @@ import Moment from 'react-moment';
 import User from '../lib/User';
 import {Viewer} from '@toast-ui/react-editor';
 
+export const getMarkdown = (p: Post): string => {
+    return p &&
+        p.HTMLList &&
+        p.HTMLList[0] &&
+        p.HTMLList[0].HTML;
+};
+
 const PostView: React.FC = () => {
     const cs = commonStyles();
     const [post, setPost] = useState<Post>(getPostInstance(''));
     const {id} = useParams();
     const hs = useHistory();
+    const ref = React.useRef();
 
     useEffect(() => {
         let postID: number = parseInt(id || '0');
@@ -33,21 +41,22 @@ const PostView: React.FC = () => {
         });
     }, [id]);
 
-    const getMarkdown = (p: Post): string => {
-        return p &&
-            p.HTMLList &&
-            p.HTMLList[0] &&
-            p.HTMLList[0].HTML;
-    };
-
-
-    const ref = React.useRef();
-
 
     return (
         <div className="login">
             <div className={cs.horizontalBlock30px}/>
             <div className={cs.centeredDiv100px}>
+                {
+                    User.getUserID() === post.Owner.UserID &&
+                    <Button
+                        variant={'contained'}
+                        color={'primary'}
+                        onClick={() => {
+                            hs.push('/posts/' + id + '/edit');
+                        }}>
+                        Edit
+                    </Button>
+                }
                 {
                     User.getUserID() === post.Owner.UserID &&
                     <Button
@@ -63,7 +72,6 @@ const PostView: React.FC = () => {
                         }}>
                         Delete
                     </Button>
-
                 }
                 <Button
                     variant={'contained'}
@@ -84,7 +92,7 @@ const PostView: React.FC = () => {
                     />
                 </h5>
                 <hr/>
-                <h1>{post.Title}</h1>
+                <h3>{post.Title}</h3>
                 <hr/>
                 <Viewer
                     initialValue={'Loading...'}

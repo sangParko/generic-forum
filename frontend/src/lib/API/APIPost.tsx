@@ -74,6 +74,22 @@ export class APIPost extends APIBase {
     }
 
     /**
+     * create post
+     *
+     * @returns {Promise<string>} ret - Create Post
+     */
+    public updatePost(post: Post): Promise<string> {
+        return this.put<string>('/posts', post)
+            .then((response) => {
+                const {data} = response;
+                return data;
+            })
+            .catch((error: AxiosError) => {
+                throw error;
+            });
+    }
+
+    /**
      * returns posts
      *
      * @returns {Promise<Array<Post>>} ret - Retrieve Posts

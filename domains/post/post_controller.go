@@ -58,6 +58,37 @@ func (c *postController) CreatePost(w http.ResponseWriter, r *http.Request) {
 }
 
 
+// @Security ApiKeyAuth
+// @Summary Updates a post
+// @Tags File
+// @Description Updates a post
+// @Param Post Post file true "Post"
+// @Accept  json
+// @Produce  json
+// @Success 200
+// @Failure 400
+// @Router /posts [put]
+func (c *postController) UpdatePost(w http.ResponseWriter, r *http.Request) {
+	decoder := json.NewDecoder(r.Body)
+	var req Post
+	err := decoder.Decode(&req)
+	if err != nil {
+		c.resUtil.RespondBadRequest(w, r, err)
+		return
+	}
+
+	user, err := c.authServ.User(r)
+	req.Owner = user
+	post, err := c.serv.UpdatePost(req)
+	if err != nil {
+		c.resUtil.RespondBadRequest(w, r, err)
+		return
+	}
+
+	c.resUtil.RespondOKWithData(w, r, post)
+}
+
+
 
 // @Security ApiKeyAuth
 // @Summary Gets posts

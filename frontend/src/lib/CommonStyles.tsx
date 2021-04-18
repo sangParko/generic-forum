@@ -2,6 +2,10 @@ import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
 
 const commonStyles = makeStyles((theme: Theme) =>
     createStyles({
+        contentContainer: {
+          width: '50%',
+            margin: 'auto',
+        },
         shortUI: {
             width: '250px',
         },
