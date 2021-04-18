@@ -149,7 +149,6 @@ const App: React.FC = () => {
                         {list(anchor)}
                     </Drawer>
                     <div id={'top-div-for-scroll'}/>
-                    <Header toggleDrawer={toggleDrawer} anchor={anchor}/>
                     <div>
                         <Switch>
                             <Route exact path="/signin"

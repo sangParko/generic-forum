@@ -16,6 +16,8 @@ const Main: React.FC = () => {
         createStyles({
             'main': {
                 color: 'blue',
+                textAlign: 'center',
+                width: 'inherit',
             }
         })
     )();

@@ -6,8 +6,9 @@ import commonStyles from '../lib/CommonStyles';
 import APIPost, {getPostInstance, Post} from '../lib/API/APIPost';
 import 'codemirror/lib/codemirror.css';
 import '@toast-ui/editor/dist/toastui-editor.css';
-import Viewer from '@toast-ui/editor/dist/toastui-editor-viewer';
+import Moment from 'react-moment';
 import User from '../lib/User';
+import {Viewer} from '@toast-ui/react-editor';
 
 const PostView: React.FC = () => {
     const cs = commonStyles();
@@ -24,20 +25,24 @@ const PostView: React.FC = () => {
 
         APIPost.getPost(postID).then(p => {
             setPost(p);
+
+            // @ts-ignore
+            ref && ref.current && ref.current.viewerInst.setMarkdown(getMarkdown(p));
         }).catch(err => {
             APIPost.AlertErrMsg(err);
         });
     }, [id]);
 
-    const getMarkUp = (p: Post) => {
-        let html = p &&
+    const getMarkdown = (p: Post): string => {
+        return p &&
             p.HTMLList &&
             p.HTMLList[0] &&
             p.HTMLList[0].HTML;
-        return {
-            __html: html
-        };
     };
+
+
+    const ref = React.useRef();
+
 
     return (
         <div className="login">
@@ -54,7 +59,7 @@ const PostView: React.FC = () => {
                                 hs.goBack();
                             }).catch(err => {
                                 APIPost.AlertErrMsg(err);
-                            })
+                            });
                         }}>
                         Delete
                     </Button>
@@ -71,8 +76,26 @@ const PostView: React.FC = () => {
             </div>
             <div className={cs.horizontalBlock30px}/>
             <div style={{backgroundColor: '#FFFFFF', maxWidth: '30rem', margin: 'auto'}}>
-                {post.Title}
-                <div dangerouslySetInnerHTML={getMarkUp(post)}/>
+                <h4>{User.getUserID()}</h4>
+                <h5>
+                    <Moment
+                        format={'yyyy-MM-DD-hh:mm:ss'}
+                        date={post.CreatedAt}
+                    />
+                </h5>
+                <hr/>
+                <h1>{post.Title}</h1>
+                <hr/>
+                <Viewer
+                    initialValue={'Loading...'}
+
+                    // @ts-ignore
+                    ref={ref}
+
+                    // @ts-ignore
+                    onFocus={() => {
+                    }}
+                />
             </div>
         </div>
     );
