@@ -63,7 +63,7 @@ const PostView: React.FC = () => {
         let htmlString = ref.current.editorInst.getHtml()
         let reply = getReplyInstance(htmlString)
         APIPost.addReply(parseInt(id || '0'), reply).then(resp => {
-            alert(resp)
+            alert('작성되었습니다.')
             setPost(resp)
             setCommentBoxOpen(false)
         }).catch(err => {
