@@ -17,6 +17,17 @@ func NewPostService(
 	}
 }
 
+func Paginate(page int) func(db *gorm.DB) *gorm.DB {
+	return func (db *gorm.DB) *gorm.DB {
+		if page == 0 {
+			page = 1
+		}
+		pageSize := 5
+		offset := (page - 1) * pageSize
+		return db.Offset(offset).Limit(pageSize)
+	}
+}
+
 
 func (s *PostService) CreatePost(post Post) (Post, error) {
 	if err := s.db.Create(&post).Error; err != nil {
@@ -42,14 +53,9 @@ func (s *PostService) AddReplyToPost(postID uint, reply Reply) (Post, error) {
 	return s.UpdatePost(post)
 }
 
-//
-//func (s *PostService) GetPostByID(id uint) (Post, error) {
-//}
-
-
-func (s *PostService) GetPosts(page uint) ([]Post, error) {
+func (s *PostService) GetPosts(page int) ([]Post, error) {
 	var posts []Post
-	if err := s.db.Find(&posts).Error; err != nil {
+	if err := s.db.Scopes(Paginate(page)).Find(&posts).Error; err != nil {
 		return nil, err
 	}
 	for ind, p := range posts {
@@ -63,6 +69,14 @@ func (s *PostService) GetPosts(page uint) ([]Post, error) {
 	return posts, nil
 }
 
+
+func (s *PostService) GetPostsCount() (int, error) {
+	var cnt int
+	if err := s.db.Raw("SELECT COUNT(id) FROM posts").Scan(&cnt).Error; err != nil {
+		return -1, err
+	}
+	return cnt, nil
+}
 
 func (s *PostService) GetPost(id uint) (Post, error) {
 	var post Post

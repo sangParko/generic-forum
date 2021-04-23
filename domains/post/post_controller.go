@@ -130,7 +130,7 @@ func (c *postController) AddReply(w http.ResponseWriter, r *http.Request) {
 
 // @Security ApiKeyAuth
 // @Summary Gets posts
-// @Tags UserAccounts
+// @Tags Posts
 // @Description Gets posts
 // @Accept  json
 // @Produce  json
@@ -149,9 +149,29 @@ func (c *postController) GetPosts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	posts, err := c.serv.GetPosts(uint(page))
+	posts, err := c.serv.GetPosts(page)
 	c.resUtil.RespondOKWithData(w, r, posts)
 }
+
+
+// @Security ApiKeyAuth
+// @Summary Gets count of posts
+// @Tags Posts
+// @Description Gets count of posts
+// @Accept  json
+// @Produce  json
+// @Success 200
+// @Failure 400
+// @Router /posts/count [get]
+func (c *postController) GetPostsCount(w http.ResponseWriter, r *http.Request) {
+	cnt, err := c.serv.GetPostsCount()
+	if err != nil {
+		c.resUtil.RespondBadRequest(w, r, err)
+		return
+	}
+	c.resUtil.RespondOKWithData(w, r, cnt)
+}
+
 
 
 // @Security ApiKeyAuth

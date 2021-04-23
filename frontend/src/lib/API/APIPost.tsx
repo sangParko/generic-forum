@@ -127,6 +127,22 @@ export class APIPost extends APIBase {
     }
 
     /**
+     * returns posts count
+     *
+     * @returns {Promise<number>>} ret - Retrieve Posts
+     */
+    public getPostsCnt(): Promise<number> {
+        return this.get<number>('/posts/count')
+            .then((response) => {
+                const {data} = response;
+                return data;
+            })
+            .catch((error: AxiosError) => {
+                throw error;
+            });
+    }
+
+    /**
      * returns post
      *
      * @returns {Promise<Array<Post>>} ret - Retrieve Posts

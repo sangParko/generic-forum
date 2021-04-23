@@ -169,6 +169,11 @@ const App: React.FC = () => {
                                    render={() => (
                                        <Main/>
                                    )}/>
+                            <Route exact path="/posts"
+                                   signedIn={signedIn}
+                                   render={() => (
+                                       <Main/>
+                                   )}/>
                             <Route exact path="/posts/create"
                                    signedIn={signedIn}
                                    render={() => (

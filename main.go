@@ -139,6 +139,7 @@ func router(loggger util.ApiLogger, db *gorm.DB, env *setup.Env) http.Handler {
 			protectedR.Put("/posts", postC.UpdatePost)
 			protectedR.Post("/posts/{id}/reply", postC.AddReply)
 			protectedR.Get("/posts/page/{page}", postC.GetPosts)
+			protectedR.Get("/posts/count", postC.GetPostsCount)
 			protectedR.Get("/posts/{id}", postC.GetPost)
 			protectedR.Delete("/posts/{id}", postC.DeletePost)
 
