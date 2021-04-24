@@ -4,7 +4,9 @@ import (
 	"../../common/setup"
 	"../../common/util"
 	"fmt"
+	"github.com/go-chi/chi"
 	"net/http"
+	"path/filepath"
 )
 
 type imageController struct {
@@ -39,11 +41,27 @@ func (c *imageController) UploadImage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer file.Close()
-	err = util.UploadFile(w, r, "C:\\backup", "image")
+	err = util.UploadFile(w, r, "C:\\backup\\images", "image")
 	if err != nil {
 		c.resUtil.RespondBadRequest(w, r, err)
 		return
 	}
 
 	c.resUtil.RespondOKWithData(w, r, handler.Filename)
+}
+
+
+// @Security ApiKeyAuth
+// @Summary gets an image
+// @Tags File
+// @Description gets an image
+// @Param fileName path string true "fileName"
+// @Produce  json
+// @Success 200
+// @Failure 400
+// @Router /images/{fileName} [get]
+func (c *imageController) GetImage(w http.ResponseWriter, r *http.Request) {
+	fileName := chi.URLParam(r, "fileName")
+	fullFilePath := filepath.Join("C:\\backup", fileName)
+	http.ServeFile(w, r, fullFilePath)
 }

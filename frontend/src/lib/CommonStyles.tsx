@@ -38,6 +38,7 @@ export default commonStyles;
 export const ContentContainer = styled.div`
             margin: auto;
             width: 50%;
+            background: white;
             @media (max-width: 768px) {
                 width: 90%;
             }

@@ -141,7 +141,7 @@ const PostView: React.FC = () => {
             }
             <div className={cs.horizontalBlock30px}/>
             <div
-                style={{ backgroundColor: 'gray', minHeight: '50px' }}
+                style={{ backgroundColor: 'white', minHeight: '50px' }}
             >댓글 {post.Replies && post.Replies.length}개
             </div>
             {

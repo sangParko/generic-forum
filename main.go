@@ -164,6 +164,7 @@ func router(loggger util.ApiLogger, db *gorm.DB, env *setup.Env) http.Handler {
 				authRoute.Post("/refresh", authC.RefreshWithRefreshToken)
 			})
 
+			publicR.Get("/images/{fileName}", imgC.GetImage)
 			publicR.Get("/posts/page/{page}", postC.GetPosts)
 			publicR.Get("/posts/count", postC.GetPostsCount)
 			publicR.Get("/posts/{id}", postC.GetPost)
