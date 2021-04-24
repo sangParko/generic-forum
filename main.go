@@ -11,10 +11,14 @@ import (
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/jwtauth"
 	"github.com/swaggo/http-swagger"
+	"golang.org/x/time/rate"
 	"gorm.io/gorm"
+	"log"
+	"net"
 	"net/http"
 	"os"
 	"path"
+	"sync"
 	"time"
 )
 
@@ -45,6 +49,7 @@ var signKey = "veryDifficultSecretKeyNoOneCanImagine"
 
 func init() {
 	tokenAuth = jwtauth.New("HS256", []byte(signKey), nil)
+	go cleanupVisitors()
 }
 
 func main() {
@@ -55,7 +60,7 @@ func main() {
 	env.PrintEnvVars(logger)
 	//portString := fmt.Sprintf(":%d", env.APIHttpPort)
 	router := router(logger, env.GetDB(), env)
-	err := http.ListenAndServe(":1001", router)
+	err := http.ListenAndServe(":1001", limit(router))
 	//err := http.ListenAndServeTLS(
 	//	":443",
 	//	"/etc/letsencrypt/live/randomvoicelive.xyz/fullchain.pem",
@@ -138,9 +143,6 @@ func router(loggger util.ApiLogger, db *gorm.DB, env *setup.Env) http.Handler {
 			protectedR.Post("/posts", postC.CreatePost)
 			protectedR.Put("/posts", postC.UpdatePost)
 			protectedR.Post("/posts/{id}/reply", postC.AddReply)
-			protectedR.Get("/posts/page/{page}", postC.GetPosts)
-			protectedR.Get("/posts/count", postC.GetPostsCount)
-			protectedR.Get("/posts/{id}", postC.GetPost)
 			protectedR.Delete("/posts/{id}", postC.DeletePost)
 
 			//routes that require admin privilege
@@ -162,6 +164,10 @@ func router(loggger util.ApiLogger, db *gorm.DB, env *setup.Env) http.Handler {
 				authRoute.Post("/refresh", authC.RefreshWithRefreshToken)
 			})
 
+			publicR.Get("/posts/page/{page}", postC.GetPosts)
+			publicR.Get("/posts/count", postC.GetPostsCount)
+			publicR.Get("/posts/{id}", postC.GetPost)
+
 			publicR.Post("/accounts", accC.CreateAccount)
 			publicR.Get("/", func(w http.ResponseWriter, r *http.Request) {
 				_, _ = w.Write([]byte("welcome anonymous"))
@@ -169,4 +175,76 @@ func router(loggger util.ApiLogger, db *gorm.DB, env *setup.Env) http.Handler {
 		})
 	})
 	return router
+}
+
+
+// Create a custom visitor struct which holds the rate limiter for each
+// visitor and the last time that the visitor was seen.
+type visitor struct {
+	limiter  *rate.Limiter
+	lastSeen time.Time
+}
+
+// Change the the map to hold values of the type visitor.
+var visitors = make(map[string]*visitor)
+var mu sync.Mutex
+
+func getVisitor(ip string) *rate.Limiter {
+	mu.Lock()
+	defer mu.Unlock()
+
+	v, exists := visitors[ip]
+	if !exists {
+		limiter := rate.NewLimiter(5, 15)
+		// Include the current time when creating a new visitor.
+		visitors[ip] = &visitor{limiter, time.Now()}
+		return limiter
+	}
+
+	// Update the last seen time for the visitor.
+	v.lastSeen = time.Now()
+	return v.limiter
+}
+
+// Every minute check the map for visitors that haven't been seen for
+// more than 3 minutes and delete the entries.
+func cleanupVisitors() {
+	for {
+		time.Sleep(time.Minute)
+
+		mu.Lock()
+		for ip, v := range visitors {
+			if time.Since(v.lastSeen) > 3*time.Minute {
+				delete(visitors, ip)
+			}
+		}
+		mu.Unlock()
+	}
+}
+
+func limit(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+		w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+
+		identifier := r.Header.Get("Authorization")
+		if identifier == "" {
+			ip, _, err := net.SplitHostPort(r.RemoteAddr)
+			if err != nil {
+				log.Println(err.Error())
+				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+				return
+			}
+			identifier = ip
+		}
+
+		limiter := getVisitor(identifier)
+		if limiter.Allow() == false {
+			http.Error(w, http.StatusText(429), http.StatusTooManyRequests)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
 }

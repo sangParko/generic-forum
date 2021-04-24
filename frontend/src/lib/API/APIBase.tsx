@@ -21,7 +21,7 @@ export class APIBase {
     }
 
     public globalErrorHandler (error: AxiosError):Promise<Error> {
-        if (error.response !== undefined && error.response.data.trim() === "jwtauth: token is expired") {
+        if (error.response !== undefined && error.response.data.trim() === "token is expired") {
             window.location.href = "/signin";
             User.signOut();
             error.response = undefined;
