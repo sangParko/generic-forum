@@ -72,7 +72,7 @@ const PostEdit: React.FC = () => {
                     previewStyle="vertical"
                     height="400px"
                     initialEditType="wysiwyg"
-                    initialValue="hello"
+                    initialValue=""
 
                     // @ts-ignore
                     ref={ref}

@@ -55,7 +55,7 @@ func (s *PostService) AddReplyToPost(postID uint, reply Reply) (Post, error) {
 
 func (s *PostService) GetPosts(page int) ([]Post, error) {
 	var posts []Post
-	if err := s.db.Scopes(Paginate(page)).Find(&posts).Error; err != nil {
+	if err := s.db.Scopes(Paginate(page)).Order("id DESC").Find(&posts).Error; err != nil {
 		return nil, err
 	}
 	for ind, p := range posts {
@@ -112,7 +112,7 @@ func (s *PostService) GetPost(id uint) (Post, error) {
 
 func (s *PostService) DeletePost(id uint) error {
 	var post Post
-	if err := s.db.Delete(&post, "id = ?", id).Error; err != nil {
+	if err := s.db.Unscoped().Delete(&post, "id = ?", id).Error; err != nil {
 		return err
 	}
 
